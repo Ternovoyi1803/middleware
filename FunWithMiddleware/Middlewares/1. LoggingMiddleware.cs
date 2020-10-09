@@ -20,12 +20,13 @@ namespace FunWithMiddleware.Middlewares
       _next = next;
     }
 
-    public async Task Invoke(HttpContext httpContext, ILogger<LoggingMiddleware> logger)
+    public async Task InvokeAsync(HttpContext httpContext, ILogger<LoggingMiddleware> logger)
     {
       var start = Stopwatch.GetTimestamp();
       try
       {
         await _next(httpContext);
+        
         var elapsedMs = GetElapsedMilliseconds(start, Stopwatch.GetTimestamp());
 
         var statusCode = httpContext.Response?.StatusCode;
@@ -39,8 +40,9 @@ namespace FunWithMiddleware.Middlewares
       }
       // Исключение не будет поймано, поскольку `LogException()` вернёт false.
       // Такой подход нужен чтобы получить контекстную информацию об эксепшене
-      catch (Exception ex) when (LogException(httpContext, logger,
-        GetElapsedMilliseconds(start, Stopwatch.GetTimestamp()), ex))
+      catch (Exception ex) when (
+        LogException(httpContext, logger, GetElapsedMilliseconds(start, Stopwatch.GetTimestamp()), ex)
+        )
       {
       }
     }
@@ -59,7 +61,7 @@ namespace FunWithMiddleware.Middlewares
         result = result
           .WithProperty("RequestForm", request.Form.ToDictionary(v => v.Key, v => v.Value.ToString()));
       }
-
+      
       result.LogError(ex, MessageTemplate, 
         httpContext.Request.Method, httpContext.Request.Path,
         httpContext.Request.Query, httpContext.Request.QueryString, 500, elapsedMs);

@@ -1,4 +1,7 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -16,9 +19,15 @@ namespace FunWithMiddleware.Controllers
     }
 
     [HttpGet("time")]
-    public string Get()
+    public string Get(int time)
     {
       return DateTime.Now.ToString("f");
+    }
+
+    [HttpGet("error")]
+    public async Task<int> ThrowTask()
+    {
+      throw new Exception("Some error");
     }
   }
 }

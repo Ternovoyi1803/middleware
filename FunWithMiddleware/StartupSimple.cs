@@ -13,12 +13,12 @@ namespace FunWithMiddleware
         {
           await context
             .Response
-            .WriteAsync("Hello World!");
-
-          return;
+            .WriteAsync("Use GRPC ");
         }
-
-        await next();
+        else
+        {
+          await next();
+        }
       });
     }
   }

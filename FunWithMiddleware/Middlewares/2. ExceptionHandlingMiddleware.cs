@@ -30,8 +30,9 @@ namespace FunWithMiddleware.Middlewares
       {
         if (context.Response.HasStarted)
         {
-          logger.LogWarning("The response has already started, " +
-                            "the http status code middleware will not be executed.");
+          logger.LogWarning(ex,
+            "The response has already started, the http status code middleware will not be executed.");
+          
           throw;
         }
 
@@ -40,7 +41,7 @@ namespace FunWithMiddleware.Middlewares
 
         object error;
         int statusCode;
-        
+
         if (ex is ValidationException validation)
         {
           statusCode = StatusCodes.Status422UnprocessableEntity;
@@ -53,7 +54,7 @@ namespace FunWithMiddleware.Middlewares
         {
           statusCode = StatusCodes.Status500InternalServerError;
           var isDevelopment = hostingEnvironment.IsDevelopment();
-          
+
           error = new
           {
             error = isDevelopment ? ex.Message : "An error occurred during processing your request",
@@ -63,7 +64,7 @@ namespace FunWithMiddleware.Middlewares
 
         context.Response.StatusCode = statusCode;
         var text = JsonSerializer.Serialize(error);
-        
+
         await context.Response.WriteAsync(text);
       }
     }

@@ -1,5 +1,7 @@
+using System;
 using System.Globalization;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
 namespace FunWithMiddleware.Middlewares
@@ -26,6 +28,19 @@ namespace FunWithMiddleware.Middlewares
       
       // Вызов следующего мидлваре в конвеере
       await _next(context);
+    }
+  }
+
+  public static class Extensions
+  {
+    public static IApplicationBuilder UseRequestCulture(this IApplicationBuilder builder)
+    {
+      if (builder == null)
+      {
+        throw new ArgumentNullException(nameof(builder));
+      }
+      
+      return builder.UseMiddleware<RequestCultureMiddleware>();
     }
   }
 }
